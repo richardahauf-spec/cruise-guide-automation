@@ -1,63 +1,69 @@
-const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
-
 export default async function handler(req, res) {
+  console.log('Function started');
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { cruiseLine, shipName, departureDate } = req.body;
-
-  let browser = null;
-  
   try {
-    browser = await puppeteer.launch({
-      args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
-    
-    const page = await browser.newPage();
-    
-    // Navigate to Perplexity
-    await page.goto('https://www.perplexity.ai/', { waitUntil: 'networkidle0', timeout: 30000 });
-    
-    // Wait for search input
-    await page.waitForSelector('textarea[placeholder*="Ask anything"]', { timeout: 10000 });
-    
-    // Your query with ship data
-    const query = `I need you to create a comprehensive Northern Lights cruise guide for ${cruiseLine} ${shipName} departing ${departureDate}. I have attached a completed report for reference. 1. Daily aurora forecasts with KP index predictions for each cruise day 2. Detailed port congestion analysis showing competing ships and passenger counts 3. Ship-specific aurora viewing deck recommendations 4. Weather conditions and impact on northern lights viewing for each day 5. Professional aurora photography guide optimized for ship conditions 6. Comprehensive daily narratives covering: Aurora viewing probability and timing, Weather conditions and aurora impact assessment, Port logistics and strategic timing vs other ships, Wildlife viewing opportunities, Photography recommendations. Please include: Executive summary with current Solar Cycle 25 assessment, Ship specifications and aurora viewing advantages, Real-time NOAA weather forecasts and marine conditions, Port-by-port congestion analysis with exact passenger counts, Aurora forecast charts showing KP index predictions, Weather impact charts for viewing probability, Ship positioning and latitude progression charts, Enhanced aurora photography masterclass, Professional success metrics and expectations. Use the same professional, authoritative tone and scientific precision. Create all charts and visual elements. Ensure each daily narrative includes specific weather impact assessments on northern lights viewing potential. Also please include a 2025 Copyright Statement on the last page – Northern Lights Navigator. The report should be 20-25 pages total with comprehensive coverage but condensed narratives.`;
-    
-    // Type query
-    await page.type('textarea[placeholder*="Ask anything"]', query);
-    await page.keyboard.press('Enter');
-    
-    // Wait for response
-    await page.waitForSelector('[data-testid="answer"]', { timeout: 120000 });
-    await page.waitForTimeout(45000);
-    
-    // Extract content
-    const response = await page.$eval('[data-testid="answer"]', el => el.innerHTML);
-    
+    const { cruiseLine, shipName, departureDate } = req.body;
+    console.log('Processing:', { cruiseLine, shipName, departureDate });
+
+    // Simulate a comprehensive cruise guide
+    const testContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+      <h1 style="color: #2c3e50; text-align: center;">Northern Lights Cruise Guide</h1>
+      <h2 style="color: #3498db;">${cruiseLine} - ${shipName}</h2>
+      <h3 style="color: #e74c3c;">Departure: ${departureDate}</h3>
+      
+      <div style="background: #ecf0f1; padding: 20px; margin: 20px 0; border-radius: 5px;">
+        <h4>Executive Summary</h4>
+        <p>Your ${cruiseLine} ${shipName} cruise departing ${departureDate} presents excellent opportunities for Northern Lights viewing during Solar Cycle 25's active phase.</p>
+      </div>
+      
+      <h4>Daily Aurora Forecasts</h4>
+      <ul>
+        <li><strong>Day 1:</strong> Departure - Aurora briefing and equipment check</li>
+        <li><strong>Day 2:</strong> KP Index 4-5 predicted - Good viewing probability</li>
+        <li><strong>Day 3:</strong> KP Index 6+ expected - Excellent aurora activity</li>
+        <li><strong>Day 4:</strong> Clear skies forecast - Prime photography conditions</li>
+        <li><strong>Day 5:</strong> Moderate activity - Optimal deck positioning</li>
+      </ul>
+      
+      <h4>Ship-Specific Viewing Recommendations</h4>
+      <p>Deck 12 Port Side offers optimal viewing with minimal light pollution. Recommended viewing times: 10:30 PM - 2:30 AM local time.</p>
+      
+      <h4>Photography Guide</h4>
+      <ul>
+        <li>Camera Settings: ISO 1600-3200, f/2.8, 15-25 second exposures</li>
+        <li>Bring tripod and extra batteries (cold weather drains power)</li>
+        <li>Use manual focus set to infinity</li>
+      </ul>
+      
+      <h4>Weather Impact Assessment</h4>
+      <p>Current NOAA forecasts indicate favorable conditions with 70% clear sky probability for aurora viewing windows.</p>
+      
+      <div style="background: #d5dbdb; padding: 15px; margin: 20px 0; text-align: center;">
+        <p><strong>© 2025 Northern Lights Navigator</strong></p>
+        <p>Professional Aurora Cruise Intelligence</p>
+      </div>
+    </div>
+    `;
+
+    console.log('Sending response');
     res.status(200).json({
       success: true,
-      content: response,
+      content: testContent,
       cruiseLine,
       shipName,
       departureDate
     });
     
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Function error:', error);
     res.status(500).json({ 
       success: false, 
       error: error.message 
     });
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 }
