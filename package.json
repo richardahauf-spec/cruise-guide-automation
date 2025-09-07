@@ -1,1 +1,16 @@
+{
+  "name": "cruise-guide-automation",
+  "version": "1.0.0",
+  "description": "Automated cruise guide generation using Perplexity",
+  "main": "api/generate-guide.js",
+  "scripts": {
+    "start": "node api/generate-guide.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
 
