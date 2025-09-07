@@ -7,7 +7,7 @@
     "start": "node api/generate-guide.js"
   },
   "dependencies": {
-    "puppeteer": "^21.0.0"
+    "puppeteer": "^23.0.0"
   },
   "engines": {
     "node": "22.x"
